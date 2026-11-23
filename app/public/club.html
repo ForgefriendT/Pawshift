@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wag Club | Pawshift</title><link rel="icon" href="/assets/favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css"></head><body><main><div class="wrap" style="padding-top:30px">
+<h2>Wag Club</h2><p class="lead">Every ₹10 you pay earns 1 Wag. Enter the phone number you booked with to see your tier.</p>
+<form id="f" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px"><input id="ph" placeholder="10-digit phone" inputmode="numeric" style="max-width:260px;margin:0" required><button class="btn">Check my Wags</button></form><p id="m" class="err"></p>
+<div class="hide" id="R"><div class="card"><h3 id="w" style="font-size:30px"></h3><p class="note" id="n"></p><div class="grid" id="t" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))"></div><h3 style="font-size:18px;margin:20px 0 6px">Paid bookings</h3><div id="b"></div></div></div>
+</div></main><script src="/js/common.js"></script>
+<script>const TI=[['Pup','Priority replies'],['Good Boy','Free nail trim'],['Top Dog','Free spa add-on'],['Pack Leader','Free day care day']];
+$('#f').onsubmit=async e=>{e.preventDefault();$('#m').textContent='';try{const r=await api('/club/'+encodeURIComponent($('#ph').value));$('#R').classList.remove('hide');const i=TI.findIndex(t=>t[0]===r.tier);
+ $('#w').textContent=`${r.wags} Wags, ${r.tier}`;$('#n').textContent=r.next?`${r.next[1]-r.wags} more Wags to reach ${r.next[0]}.`:'You are at the top tier.';
+ $('#t').innerHTML=TI.map((t,j)=>`<div class="tier ${j<=i?'on':''}"><b>${t[0]}</b><small style="display:block">${t[1]}</small></div>`).join('');
+ $('#b').innerHTML=r.bookings.length?r.bookings.map(b=>`<div class="ln"><span>${esc(b.id)} | ${esc(b.pet)} | ${esc(b.date)}</span><b>${inr(b.total)}</b></div>`).join(''):'<span class="note">No paid bookings yet.</span>'}catch(x){$('#m').textContent=x.message}}</script></body></html>

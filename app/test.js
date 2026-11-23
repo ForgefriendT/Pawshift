@@ -1,0 +1,14 @@
+process.env.DB_FILE=require('os').tmpdir()+'/pawshift-test-'+Date.now()+'.json';
+const assert=require('assert'),app=require('./server');
+const srv=app.listen(0,async()=>{const u=`http://localhost:${srv.address().port}/api`,J=(p,b,h)=>fetch(u+p,{method:b?'POST':'GET',headers:{'content-type':'application/json',...h},body:b&&JSON.stringify(b)}).then(async r=>({s:r.status,j:await r.json()}));
+ try{let r=await J('/quote',{animal:'rabbit',items:{wk:2}});assert.equal(r.s,400,'rabbits cannot take walks');
+  r=await J('/quote',{animal:'dog',size:1,items:{fg:1,wk:4},plan:'plus'});assert.equal(r.j.subtotal,1949+1000);assert.equal(r.j.total,Math.round(2949*.9)===2654?2949-295:0);
+  const d=new Date(Date.now()+864e5).toISOString().slice(0,10),body={animal:'fish',items:{tk:2},plan:'pay',owner:'Test User',phone:'9876543210',pet:'Bubbles',address:'12 Test Road',date:d,slot:'7:00 - 9:00 am'};
+  r=await J('/bookings',body);assert.equal(r.s,201);const id=r.j.id;assert.equal(r.j.total,900);assert.equal(r.j.stage,-1);
+  r=await J(`/bookings/${id}/advance`,{});assert.equal(r.s,400,'cannot track before paying');
+  r=await J(`/bookings/${id}/pay`,{method:'upi'});assert.equal(r.j.status,'paid');const t=r.j.payment.txn;r=await J(`/bookings/${id}/pay`,{method:'upi'});assert.equal(r.j.payment.txn,t,'payment is idempotent');
+  for(let i=0;i<7;i++)r=await J(`/bookings/${id}/advance`,{});assert.equal(r.j.stage,5);assert.equal(r.j.status,'completed');
+  r=await J('/club/9876543210');assert.equal(r.j.wags,90);
+  r=await J('/bookings',{...body,date:'2020-01-01'});assert.equal(r.s,400);r=await J('/scores',{name:'<b>Z',score:25});assert.equal(r.j.coupon,'PAWS5');r=await J('/scores',{name:'x',score:9999});assert.equal(r.s,400);
+  r=await J('/admin');assert.equal(r.s,401);r=await J('/admin',null,{'x-admin-key':'pawshift'});assert.equal(r.j.revenue,900);console.log('All API tests passed');
+ }catch(e){console.error('FAIL',e.message);process.exitCode=1}srv.close()});

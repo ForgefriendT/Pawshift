@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+app/node_modules/
+
+# Local databases & temp files
+data/db.json
+data/db.json.tmp
+app/data/db.json
+app/data/db.json.tmp
+
+# Environment variables
+.env
+app/.env
+
+# OS files
+.DS_Store
+*/.DS_Store
+Thumbs.db
+
+# Playwright artifacts
+.playwright-mcp/
