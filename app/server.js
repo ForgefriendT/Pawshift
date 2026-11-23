@@ -1,9 +1,11 @@
 const express=require('express'),fs=require('fs'),path=require('path'),crypto=require('crypto');
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'20kb'}));
 app.use(express.static(path.join(__dirname,'public'),{extensions:['html']}));
-const DB=process.env.DB_FILE||path.join(__dirname,'data','db.json'),ADMIN=process.env.ADMIN_KEY||'pawshift';
+const isServerless=Boolean(process.env.NETLIFY||process.env.AWS_LAMBDA_FUNCTION_NAME||process.env.LAMBDA_TASK_ROOT);
+const defaultDb=isServerless?path.join(require('os').tmpdir(),'pawshift-db.json'):path.join(__dirname,'data','db.json');
+const DB=process.env.DB_FILE||defaultDb,ADMIN=process.env.ADMIN_KEY||'pawshift';
 let db={bookings:[],scores:[],leads:[]};try{db={...db,...JSON.parse(fs.readFileSync(DB,'utf8'))}}catch(e){}
-const save=()=>{fs.mkdirSync(path.dirname(DB),{recursive:true});fs.writeFileSync(DB+'.tmp',JSON.stringify(db));fs.renameSync(DB+'.tmp',DB)};
+const save=()=>{try{fs.mkdirSync(path.dirname(DB),{recursive:true});fs.writeFileSync(DB+'.tmp',JSON.stringify(db));fs.renameSync(DB+'.tmp',DB)}catch(e){}};
 /* ---------- catalog: the single source of truth for prices ---------- */
 const ANIMALS={dog:{n:'Dog',sized:1},cat:{n:'Cat',sized:1},rabbit:{n:'Rabbit'},guinea:{n:'Guinea pig'},bird:{n:'Bird'},fish:{n:'Fish'}};
 const ALL=['dog','cat','rabbit','guinea','bird','fish'],SM=['rabbit','guinea','bird'];

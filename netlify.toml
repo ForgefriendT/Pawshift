@@ -1,0 +1,39 @@
+[build]
+  base = "app"
+  publish = "public"
+  functions = "functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Proxy /api requests to Netlify serverless function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Clean URL routing for static pages
+[[redirects]]
+  from = "/book"
+  to = "/book.html"
+  status = 200
+
+[[redirects]]
+  from = "/track"
+  to = "/track.html"
+  status = 200
+
+[[redirects]]
+  from = "/play"
+  to = "/play.html"
+  status = 200
+
+[[redirects]]
+  from = "/club"
+  to = "/club.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
