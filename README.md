@@ -72,13 +72,17 @@ The server will start on [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## ⚙️ Environment Configuration
+## 🌐 Deploy to Netlify
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `PORT` | `3000` | Port for the HTTP server |
-| `ADMIN_KEY` | `pawshift` | Secret key to access `/api/admin` and `/admin` dashboard |
-| `DB_FILE` | `data/db.json` | Path to persistent JSON database file |
+You can deploy Pawshift directly to Netlify in one click:
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ForgefriendT/Pawshift)
+
+### Netlify Deployment Details
+- **Base directory**: `app`
+- **Publish directory**: `public`
+- **Functions directory**: `functions` (serverless API powered by Express via `serverless-http`)
+- Pre-configured `netlify.toml` handles all clean routing (`/book`, `/track`, `/play`, `/club`, `/admin`) and redirects all `/api/*` requests to the Netlify Serverless Function.
 
 ---
 
